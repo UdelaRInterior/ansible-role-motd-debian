@@ -1,0 +1,18 @@
+---
+# tasks file for motd_debian
+
+- debug:
+    msg: 'fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}'
+    verbosity: 2
+
+
+- name: Local and distant paclages check
+  include_tasks: 10_checks_packages.yml
+
+- name: Build /etc/motd
+  include_tasks: 20_build_motd.yml
+
+- name: Set scripts in /etc/prfile.d/ 
+  include_tasks: 30_scripts.yml
+  
+...

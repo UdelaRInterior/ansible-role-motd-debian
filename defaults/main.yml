@@ -1,0 +1,20 @@
+---
+# defaults file for motd
+
+motd_deb_motd:
+- build: figlet
+  fragment: '{{ inventory_hostname.split(".",1) | first }}.'
+- build: figlet
+  fragment: '{{ inventory_hostname.split(".",1) | last }}'
+- build: text
+  fragment: '{{ lookup( "file", "{{ role_path }}/files/motd" ) }}'
+
+motd_deb_scripts:
+- file: 20-cow_fortune
+  template: cow_fortune.j2 
+  dependencies:
+  - cowsay
+  - fortunes
+  - fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}
+
+...

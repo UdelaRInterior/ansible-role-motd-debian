@@ -1,0 +1,27 @@
+---
+# tasks to build /etc/motd
+
+# - name: Erase old motd file
+#   file:
+#     path: /etc/motd
+#     state: absent
+
+- name: Create temp directory for motd fragments
+  tempfile:
+    prefix: motd
+    state: directory
+  register: motd_tempdir
+
+- name: Build figlets and texts parts of motd
+  include_tasks: include/figlet_text.yml
+  loop: '{{ motd_deb_motd }}'
+  loop_control:
+    loop_var: motd_fragment
+    index_var: motd_index
+  
+- name: Assamble motd from fragments
+  assemble:
+    src: '{{ motd_tempdir.path }}'
+    dest: /etc/motd
+
+...

@@ -1,0 +1,31 @@
+---
+# Build a fragment of motd
+
+- name: Generate ASCII art and motd frgment if figlet
+  block:
+
+  - name: Generate ASCII art
+    local_action: command figlet {{ motd_fragment.fragment }}
+    become: no
+    register: motd_figlet_fragment
+
+  - name: Generate motd fragment with ASCII art
+    copy:
+      dest: '{{ motd_tempdir.path }}/motd_fragment_{{ motd_index }}'
+      content: '{{ motd_figlet_fragment.stdout }}'
+      owner: root
+      group: root
+      mode: u=rw,g=r,o=r
+
+  when: motd_fragment.build == 'figlet'
+
+- name: Generate motd fragment with text, if text
+  copy:
+    dest: '{{ motd_tempdir.path }}/motd_fragment_{{ motd_index }}'
+    content: '{{ motd_fragment.fragment }}'
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  when: motd_fragment.build == 'text'
+
+...

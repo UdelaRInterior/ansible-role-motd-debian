@@ -1,0 +1,40 @@
+---
+## Check of local packages and packages install
+
+- debug:
+    var: motd_deb_motd
+    verbosity: 2
+
+- name: When we want an ASCII art banner, check if figlet is installed locally
+  block: 
+
+  - name: Gather the list of local packages
+    local_action: package_facts
+    become: no
+    register: local_packages
+  
+  - debug: 
+      msg: '{{ local_packages | json_query("ansible_facts.packages.figlet") }}'
+      verbosity: 2
+
+  - name: If figlet not installed
+    block: 
+
+    - name: Stop or install if figlet is not installed
+      pause:
+        prompt: |
+          You want to set an ASCII art banner and figlet is not installed on your local controller. 
+          Do you want to install it? 
+          Abort if no, and run the present playbook with -K (--ask-become-pass) option, to provide your sudo password.
+
+    - name: Install figlet in local controller
+      apt:
+        name: figlet
+        state: present
+      delegate_to: localhost
+
+    when: local_packages | json_query("ansible_facts.packages.figlet") | type_debug != "list"
+
+  when:  motd_deb_motd | json_query ('[?build == `figlet`]') | length > 0 
+
+...
