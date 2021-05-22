@@ -1,38 +1,66 @@
-Role Name
+Role MotD for debian
 =========
 
-A brief description of the role goes here.
+Debian motd management, as [described in official wiki](https://wiki.debian.org/motd), seems broken, and so the ansible roles existing in the Galaxy. But the motd can still be managed: 
+* a static first part in the static `/etc/motd` file,
+* a dynamic script generated part, with .sh scripts in `/etc/profile.s/`. 
+
+This role manages this motd in a debian, building: 
+* a static part build by text fragments, that can be included as such or processed by `figlet` for an ASCII art
+* a dynamic part installing scripts based on templates. Some templates are proposed and new ones can be built (PRs welcome)
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+A debian host installed
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+`motd_deb_motd` structure describes the /etc/motd to build. Items with `build: figlet` are processed by figlet (that the role can install in local controller), those with `build: figlet` are included as such. 
+
+`motd_deb_scripts` structure describe the scripts to be installed in `/etc/pofile.d/`. For the moment ther is only a very simple `fortune | cowsay`, but complex scripts, from templates with ansible parameters, can bi imagined. 
+
+Defalut values of these variables are: 
+
+```
+motd_deb_motd:
+- build: figlet
+  fragment: '{{ inventory_hostname.split(".",1) | first | capitalize }}.'
+- build: figlet
+  fragment: '{{ inventory_hostname.split(".",1) | last }}'
+- build: text
+  fragment: '{{ lookup( "file", "{{ role_path }}/files/motd" ) }}'
+
+motd_deb_scripts:
+- file: 20-cow_fortune
+  template: cow_fortune.j2 
+  dependencies:
+  - cowsay
+  - fortunes
+  - fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+no dependencies
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Just call motd_debian on a debian host: 
 
-    - hosts: servers
+    - hosts: all
       roles:
-         - { role: username.rolename, x: 42 }
+         - role: udelarinterior.motd_debian
 
 License
 -------
 
-BSD
+GPLv3
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Daniel Viñar Ulriksen @ulvida, [Red de Unidades Informáticas de la UdelaR en el Interior](https://github.com/udelarinterior)

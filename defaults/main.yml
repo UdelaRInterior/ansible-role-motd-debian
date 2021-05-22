@@ -3,7 +3,7 @@
 
 motd_deb_motd:
 - build: figlet
-  fragment: '{{ inventory_hostname.split(".",1) | first }}.'
+  fragment: '{{ inventory_hostname.split(".",1) | first | capitalize }}.'
 - build: figlet
   fragment: '{{ inventory_hostname.split(".",1) | last }}'
 - build: text
