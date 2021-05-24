@@ -16,5 +16,11 @@ motd_deb_scripts:
   - cowsay
   - fortunes
   - fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}
-
+  params:
+    fortunes_dir: /usr/share/games/fortunes/
+    fortunes:
+    - file: es
+      percent: 60%
+    - file: .
+      percent: 40%
 ...

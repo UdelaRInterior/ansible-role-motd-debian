@@ -1,6 +1,6 @@
 galaxy_info:
   role_name: motd_debian
-  author: Daniel Viñar (@ulvida) and Santiago Martínez (@santiagomr)
+  author: Daniel Viñar (@ulvida)
   description: Motd customization working on recent debians
   company: Red Unidades Informáticas UdelaR Interior (@UdelaRInterior)
 
