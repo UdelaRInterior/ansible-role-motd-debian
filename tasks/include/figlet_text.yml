@@ -1,15 +1,17 @@
 ---
 # Build a fragment of motd
 
-- name: Generate ASCII art and motd frgment if figlet
+- name: Generate ASCII art and motd fragment if figlet
   block:
 
-  - name: Generate ASCII art
-    local_action: command figlet {{ motd_fragment.fragment }}
+  - name: Generate figlet/lolcat ASCII art
+    ansible.builtin.shell:
+      cmd: figlet "{{ motd_fragment.fragment }}" {{ " | lolcat" if ( motd_fragment.lolcat is defined and motd_fragment.lolcat | bool ) }}
     become: no
     register: motd_figlet_fragment
+    delegate_to: localhost
 
-  - name: Generate motd fragment with ASCII art
+  - name: Upload motd ASCII art fragment 
     copy:
       dest: '{{ motd_tempdir.path }}/motd_fragment_{{ motd_index }}'
       content: '{{ motd_figlet_fragment.stdout }}'
@@ -20,12 +22,24 @@
   when: motd_fragment.build == 'figlet'
 
 - name: Generate motd fragment with text, if text
-  copy:
-    dest: '{{ motd_tempdir.path }}/motd_fragment_{{ motd_index }}'
-    content: '{{ motd_fragment.fragment }}'
-    owner: root
-    group: root
-    mode: u=rw,g=r,o=r
+  block:
+
+  - name: lolcat the file content if requested
+    ansible.builtin.shell:
+      cmd: echo {{ motd_fragment.fragment }} | lolcat
+    register: motd_lolcat_fragment
+    when: 
+    - motd_fragment.lolcat is defined
+    - motd_fragment.lolcat | bool
+    delegate_to: localhost
+
+  - name: Upload the static motd fragment to the temp directory
+    copy:
+      dest: '{{ motd_tempdir.path }}/motd_fragment_{{ motd_index }}'
+      content: '{{ motd_lolcat_fragment if ( motd_fragment.lolcat is defined and motd_fragment.lolcat | bool ) else motd_fragment.fragment }}'
+      owner: root
+      group: root
+      mode: u=rw,g=r,o=r
   when: motd_fragment.build == 'text'
 
 ...

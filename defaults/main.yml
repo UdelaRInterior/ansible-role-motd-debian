@@ -19,7 +19,7 @@ motd_deb_scripts:
   - fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}
   fortunes_dir: /usr/share/games/fortunes/
   fortunes:
-  - file: es
+  - file: '{{ ansible_facts.env.LANGUAGE[:2] }}'
     percent: 60%
   - file: .
     percent: 40%
