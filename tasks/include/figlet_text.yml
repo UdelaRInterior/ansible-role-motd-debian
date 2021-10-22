@@ -11,6 +11,10 @@
     register: motd_figlet_fragment
     delegate_to: localhost
 
+  - debug:
+      var: motd_figlet_fragment
+      verbosity: 2
+
   - name: Upload motd ASCII art fragment 
     copy:
       dest: '{{ motd_tempdir.path }}/motd_fragment_{{ motd_index }}'

@@ -22,7 +22,7 @@ Role Variables
 * `build:` which presently accepts `text` or `figlet`:
   * hashes with `build: figlet` are processed by figlet (that the role can automatically install in local controller),
   * hashes with `build: text` are included as such.
-* `lolcat:` a boolean that indicates if the result is processed with lolcat o have a raimbow display (the role can also automatically install lolcat in the local controller) 
+* `lolcat:` a boolean that indicates if the result is processed with lolcat o have a raimbow display (the role can also automatically install lolcat in the local controller). However, this option is still not working for static motd, only for scripts.
 
 `motd_deb_scripts` structure describe the scripts to be installed in `/etc/pofile.d/`. For the moment ther is only a very simple `fortune | cowsay | lolcat`, but complex scripts, from templates with ansible parameters, can bi imagined. 
 
