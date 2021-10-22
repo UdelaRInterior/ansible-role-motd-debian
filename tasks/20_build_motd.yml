@@ -14,7 +14,7 @@
 
 - name: Build figlets and texts parts of motd
   include_tasks: include/figlet_text.yml
-  loop: '{{ motd_deb_motd }}'
+  loop: '{{ motd_deb_motd_file_structure }}'
   loop_control:
     loop_var: motd_fragment
     index_var: motd_index

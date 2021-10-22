@@ -17,14 +17,14 @@ A debian host installed
 Role Variables
 --------------
 
-`motd_deb_motd` structure describes the /etc/motd to build. Items with `build: figlet` are processed by figlet (that the role can install in local controller), those with `build: figlet` are included as such. 
+`motd_deb_motd_file_structure` structure describes the /etc/motd to build. Items with `build: figlet` are processed by figlet (that the role can install in local controller), those with `build: figlet` are included as such. 
 
 `motd_deb_scripts` structure describe the scripts to be installed in `/etc/pofile.d/`. For the moment ther is only a very simple `fortune | cowsay`, but complex scripts, from templates with ansible parameters, can bi imagined. 
 
 Defalut values of these variables are: 
 
 ```
-motd_deb_motd:
+motd_deb_motd_file_structure:
 - build: figlet
   fragment: '{{ inventory_hostname.split(".",1) | first | capitalize }}.'
 - build: figlet

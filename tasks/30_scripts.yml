@@ -5,7 +5,7 @@
   include_tasks: include/script.yml
   loop: '{{ motd_deb_scripts }}'
   loop_control:
-    loop_var: motd_deb_script
+    loop_var: motd_deb_curr_script
   when: motd_deb_scripts | length > 0
     
 ...

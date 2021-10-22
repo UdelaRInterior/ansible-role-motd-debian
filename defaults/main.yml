@@ -1,11 +1,12 @@
 ---
 # defaults file for motd
 
-motd_deb_motd:
+motd_deb_motd_file_structure:
 - build: figlet
-  fragment: '{{ inventory_hostname.split(".",1) | first | capitalize }}.'
-- build: figlet
-  fragment: '{{ inventory_hostname.split(".",1) | last }}'
+  fragment: |
+      {{ inventory_hostname.split(".",1) | first | capitalize }}.
+      {{ inventory_hostname.split(".",1) | last }}
+  lolcat: true
 - build: text
   fragment: '{{ lookup( "file", "{{ role_path }}/files/motd" ) }}'
 
@@ -16,11 +17,12 @@ motd_deb_scripts:
   - cowsay
   - fortunes
   - fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}
-  params:
-    fortunes_dir: /usr/share/games/fortunes/
-    fortunes:
-    - file: es
-      percent: 60%
-    - file: .
-      percent: 40%
+  fortunes_dir: /usr/share/games/fortunes/
+  fortunes:
+  - file: es
+    percent: 60%
+  - file: .
+    percent: 40%
+  lolcat: true
+
 ...

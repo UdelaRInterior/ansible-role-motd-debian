@@ -2,14 +2,20 @@
 # Set a script 
 
 - name: Install dependencies
-  apt:
-    name: '{{ motd_deb_script.dependencies }}'
+  ansible.builtin.package:
+    name: '{{ motd_deb_curr_script.dependencies }}'
     state: latest
+
+- name: Optionnally install lolcat
+  ansible.builtin.package:
+    name: lolcat
+    state: latest
+  when: motd_deb_curr_script.lolcat | bool
 
 - name: Set script in /etc/profile.d/
   template:
-    src: '{{ motd_deb_script.template | default("default.j2") }}'
-    dest: /etc/profile.d/{{ motd_deb_script.file | default( motd_deb_script.template | splitext | first | default( 'default' ) )}}.sh
+    src: '{{ motd_deb_curr_script.template | default("default.j2") }}'
+    dest: /etc/profile.d/{{ motd_deb_curr_script.file | default( motd_deb_curr_script.template | splitext | first | default( 'default' ) )}}.sh
     owner: root
     group: root
     mode: u=rwx,g=rx,o=rx

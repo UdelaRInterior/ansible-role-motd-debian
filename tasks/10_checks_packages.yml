@@ -2,7 +2,15 @@
 ## Check of local packages and packages install
 
 - debug:
-    var: motd_deb_motd
+    var: motd_deb_motd_file_structure
+    verbosity: 3
+
+- debug: 
+    msg: "{{ motd_deb_motd_file_structure | json_query ('[?lolcat]') }}"
+    verbosity: 2
+
+- debug: 
+    var: inventory_file
     verbosity: 2
 
 - name: When we want an ASCII art banner, check if figlet is installed locally
@@ -11,30 +19,79 @@
   - name: Gather the list of local packages
     local_action: package_facts
     become: no
-    register: local_packages
+    register: motd_deb_local_packages
   
   - debug: 
-      msg: '{{ local_packages | json_query("ansible_facts.packages.figlet") }}'
+      msg: '{{ motd_deb_local_packages | json_query("ansible_facts.packages.figlet") }}'
       verbosity: 2
+  
+  - debug: 
+      msg: '{{ motd_deb_local_packages | json_query("ansible_facts.packages.lolcat") }}'
+      verbosity: 2      
 
-  - name: If figlet not installed
-    block: 
+  when: >
+      motd_deb_motd_file_structure | json_query ('[?build == `figlet`]') | length > 0 
+      or motd_deb_motd_file_structure | json_query ('[?lolcat]') | length > 0 
 
-    - name: Stop or install if figlet is not installed
-      pause:
-        prompt: |
-          You want to set an ASCII art banner and figlet is not installed on your local controller. 
-          Do you want to install it? 
-          Abort if no, and run the present playbook with -K (--ask-become-pass) option, to provide your sudo password.
+#- name: Set list of packages (figlet and/or lolcat) needed
+#  set_fact:
+#    motd_deb_packages_needed:
+#    - '{{ "figlet" if motd_deb_local_packages | json_query("ansible_facts.packages.figlet") | type_debug != "list" else omit }}'
+#    - '{{ "lolcat" if motd_deb_local_packages | json_query("ansible_facts.packages.lolcat") | type_debug != "list" else omit }}'
+#
+#- debug:
+#    var: motd_deb_packages_needed
+#    verbosity: 2
+#
+#- pause:
+#
+- name: Stop or install if figlet or lolcat is not installed
+  pause:
+    prompt: |
+      You want to set an ASCII art banner and figlet or lolcat is not installed on your local controller. 
+      Do you want to install them? 
+      Abort if no, and run the present playbook with -K (--ask-become-pass) option, to provide your sudo password.
+  when: >
+    motd_deb_local_packages | json_query("ansible_facts.packages.figlet") | type_debug != "list"
+    or motd_deb_local_packages | json_query("ansible_facts.packages.lolcat") | type_debug != "list"
 
-    - name: Install figlet in local controller
-      apt:
-        name: figlet
-        state: present
-      delegate_to: localhost
+- name: Install figlet in local controller
+  apt:
+    name: figlet
+    state: latest
+  delegate_to: localhost
+  when: motd_deb_local_packages | json_query("ansible_facts.packages.figlet") | type_debug != "list"
 
-    when: local_packages | json_query("ansible_facts.packages.figlet") | type_debug != "list"
+- name: Install lolcat in local controller
+  apt:
+    name: lolcat
+    state: latest
+  delegate_to: localhost
+  when: motd_deb_local_packages | json_query("ansible_facts.packages.lolcat") | type_debug != "list"
 
-  when:  motd_deb_motd | json_query ('[?build == `figlet`]') | length > 0 
+
+#- name: If figlet needed and not installed
+#  block: 
+#
+#  - name: Stop or install if figlet is not installed
+#    pause:
+#      prompt: |
+#        You want to set an ASCII art banner and figlet is not installed on your local controller. 
+#        Do you want to install it? 
+#        Abort if no, and run the present playbook with -K (--ask-become-pass) option, to provide your sudo password.
+#
+#  - name: Install figlet in local controller
+#    apt:
+#      name: figlet
+#      state: present
+#    delegate_to: localhost
+#
+#  when: 
+#  - motd_deb_motd_file_structure | json_query ('[?build == `figlet`]') | length > 0
+#  - motd_deb_local_packages | json_query("ansible_facts.packages.figlet") | type_debug != "list"
+#
+#- name: If lolcat needed and not installed
+#
+#  when:  motd_deb_motd_file_structure | json_query ('*.params.[?lolcat]') | length > 0 
 
 ...

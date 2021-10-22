@@ -2,6 +2,7 @@
 # A welcome saying
  
 /usr/games/fortune \
-  {% for motd_fortune in motd_deb_script.params.fortunes -%}
-  {{ motd_fortune.percent }} {{ motd_deb_script.params.fortunes_dir }}{{ motd_fortune.file }} {% endfor %}\
+  {% for motd_fortune in motd_deb_curr_script.fortunes -%}
+  {{ motd_fortune.percent }} {{ motd_deb_curr_script.fortunes_dir }}{{ motd_fortune.file }} {% endfor %}\
   | /usr/games/cowsay
+  {%- if motd_deb_curr_script.lolcat %}| /usr/games/lolcat {% endif %}
