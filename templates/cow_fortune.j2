@@ -5,4 +5,4 @@
   {% for motd_fortune in motd_deb_curr_script.fortunes -%}
   {{ motd_fortune.percent }} {{ motd_deb_curr_script.fortunes_dir }}{{ motd_fortune.file }} {% endfor %}\
   | /usr/games/cowsay
-  {%- if motd_deb_curr_script.lolcat %}| /usr/games/lolcat {% endif %}
+  {%- if motd_deb_curr_script.lolcat %}| /usr/games/lolcat -a -d 3{% endif %}

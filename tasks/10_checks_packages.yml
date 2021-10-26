@@ -13,6 +13,16 @@
     var: inventory_file
     verbosity: 2
 
+- debug:
+    var: ansible_facts
+    verbosity: 2
+
+- debug:
+    msg: 'fortunes-{{ ansible_facts.env.LANGUAGE[:2] }}'
+    verbosity: 2
+  when: ansible_facts.env.LANGUAGE is defined
+
+
 - name: When we want an ASCII art banner, check if figlet is installed locally
   block: 
 
